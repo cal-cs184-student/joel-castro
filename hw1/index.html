@@ -268,6 +268,39 @@
 				</table>
 			</div>
 
+			<h3>Extra Credit - Other anti-aliasing methods: Random Sampling</h3>
+			Wikipedia lists a bunch of other common sampling patterns: <a href="https://en.wikipedia.org/wiki/Supersampling">en.wikipedia.org/wiki/Supersampling. I chose to implement random sampling because I thought it'd look funny... I was correct:
+			<figure>
+				<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/random_sampling_eg.png" alt="random sampling example" style="width:50%" />
+				<figcaption>Look how fluffy and cute these once sharp and scary shapes have become 😁.</figcaption>
+			</figure>
+			Here is the same example at different sampling rates. Notice how even at the same sampling rate as the above example, no two renders are exactly the same!
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/random_sampling_1.png" width="400px" />
+							<figcaption>random supersampled SVG4 SR=1.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/random_sampling_2.png" width="400px" />
+							<figcaption>random supersampled SVG4 SR=4.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/random_sampling_3.png" width="400px" />
+							<figcaption>random supersampled SVG4 SR=9.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/random_sampling_4.png" width="400px" />
+							<figcaption>random supersampled SVG4 SR=16.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			Interestingly, the shapes begin to look sharp again once we increase the sampling rate. On one hand, the randomness could make for a cool stylistic effect, on another, shapes appear just as (if not less) jagged as normal sampling within the same amount of sample increases. 
+				
 			<h2>Task 3: Transforms</h2>
 			Next, I implemented 3 transforms based on: <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform">https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform</a>.
 
