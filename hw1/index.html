@@ -48,24 +48,34 @@
 	-->
 
 			<h2>Overview</h2>
-			Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
-			TODO
+			<p>
+				This is my implementation of a C++ rasterizer. I have always wondered how data can be tranformed into something that can be shared accross our digital devices;
+				this project dove into the weeds of how we represent images in memory and the algorithms pictures have to undergo to decide what is drawn at any particular pixel to
+				give a good representation of it. The most insightful takeaway from this experience was beginning to think of images as signals-- like any other signal being sampled,
+				(in our case, from mathmatically defined, contionous shapes --> to pixels on ascreen) images are subject to the effects of aliasing and other visual imperfections. Fortunateley,
+				we'll talk about ways to mitigate these effects!
+			</p>
 
 			<h2>Task 1: Drawing Single-Color Triangles</h2>
-			In this task we tackle the problem of of drawing and filling triangles to a screen. To accomplish this we must answer questions like: how do we know when a pixel is inside a triangle? What does it mean
-			for a triangle to colored? How can we take data and turn it into output for our RGB displays?
+			<p>
+				In this task we tackle the problem of of drawing and filling triangles to a screen. To accomplish this we must answer questions like: how do we know when a pixel is inside a triangle? What does it mean
+				for a triangle to colored? How can we take data and turn it into output for our RGB displays?
+			</p>
 
 			<h3> How Triangles are rasterized</h3>
-			My unoptmized attempt consists of iterating through every pixel in the specified triangle's
-			bounding box (defined by min/max coordinates along either either x-y axis). For every pixel in question,
-			it's center point (that is, (int)x/y coordinate +0.5) were put through the line test described in lecture.
-			Since the line test returns a negative value if a point is to the left of it and a non-negative value otherwise, this could be
-			used to determine whether a given point was within a triangle (i.e. to the same side of all 3 lines/sides of a triangle). To account
-			for triangles having different winding order, I defined two conditions that could trigger a pixel fill: a point is the **left** of
-			3 sides, **OR** a point is to the **right** of all 3 sides.
-
-			This is no worse than simply checking each sample within the bounding box of the triangle, but it literally is doing just that
-			(and I went on to add some optimization as I'll talk about below).
+			<p>
+				My unoptmized attempt consists of iterating through every pixel in the specified triangle's
+				bounding box (defined by min/max coordinates along either either x-y axis). For every pixel in question,
+				it's center point (that is, (int)x/y coordinate +0.5) were put through the line test described in lecture.
+				Since the line test returns a negative value if a point is to the left of it and a non-negative value otherwise, this could be
+				used to determine whether a given point was within a triangle (i.e. to the same side of all 3 lines/sides of a triangle). To account
+				for triangles having different winding order, I defined two conditions that could trigger a pixel fill: a point is the **left** of
+				3 sides, **OR** a point is to the **right** of all 3 sides.
+			</p>
+			<p>
+				This is no worse than simply checking each sample within the bounding box of the triangle, but it literally is doing just that
+				(and I went on to add some optimization as I'll talk about below).
+			</p>
 
 			<figure>
 				<img src="images/basicSVG4.png" alt="Screenshot of working SVG4" style="width:50%" />
@@ -73,34 +83,45 @@
 			</figure>
 
 			<h3>Opitmizations</h3>
-			In order to improve the performance of my algorithm, I precomputed line-test coeffecients outside of loops. For instance,
-			any differences between points were computed prior to the nested for-loop over pixels. Also, terms in line tests that relied
-			on the y-value of the pixel in question were computed outside of the inner-most for-loop as the same value is used along
-			an entire row of pixels. Moreover, in order to take full advantage of caching from memory accesses from calls to fill_pixels,
-			I accessed the frame buffer in row-major order (i.e. I traversed along all x-cordinates in a row before moving on the the next
-			y-cordinate). Lastly, I made use of C++ buit-in parallelization capabilities by using ``#pragma omp parallel for collapse(2)`` to
-			split up iterations of the nested for-loop accross threads.
+			<p>
+				In order to improve the performance of my algorithm, I precomputed line-test coeffecients outside of loops. For instance,
+				any differences between points were computed prior to the nested for-loop over pixels. Also, terms in line tests that relied
+				on the y-value of the pixel in question were computed outside of the inner-most for-loop as the same value is used along
+				an entire row of pixels. Moreover, in order to take full advantage of caching from memory accesses from calls to fill_pixels,
+				I accessed the frame buffer in row-major order (i.e. I traversed along all x-cordinates in a row before moving on the the next
+				y-cordinate). Lastly, I made use of C++ buit-in parallelization capabilities by using ``#pragma omp parallel for collapse(2)`` to
+				split up iterations of the nested for-loop accross threads.
+			</p>
+			<p>
+				There was also an attempt at SIMD parallelization as well, but I ran into
+				precision problems (a few traingles missing here and there) that weren't worth debugging because, even at that stage, test svgs
+				rendered slower with SIMD than without it. Perhaps the overhead of loading numbers into vectors outweighed SIMD parallelization
+				for the simple examples we are testing on(?).
+			</p>
 
-			There was also an attempt at SIMD parallelization as well, but I ran into
-			precision problems (a few traingles missing here and there) that weren't worth debugging because, even at that stage, test svgs
-			rendered slower with SIMD than without it. Perhaps the overhead of loading numbers into vectors outweighed SIMD parallelization
-			for the simple examples we are testing on(?).
+			<p>These were my timing results per svg:</p>
+			<ul>
+				<li>
+					<strong>Basic Implementation Time Trial</strong>:
+					<ul>
+						<li>#3: 0.024 seconds</li>
+						<li>#4: 0.001 seconds</li>
+						<li>#5: 0.002 seconds</li>
+						<li>#6: 0.003 seconds</li>
+					</ul>
+				</li>
+				<li>
+					<strong>W/ Optimization</strong>:
+					<ul>
+						<li>#3: 0.012 seconds</li>
+						<li>#4: 0.001 seconds</li>
+						<li>#5: 0.002 seconds</li>
+						<li>#6: 0.002 seconds</li>
+					</ul>
+				</li>
+			</ul>
 
-			These were my timing results per svg:
-
-			**basic implementation time trial**:
-			- #3: 0.024 seconds
-			- #4: 0.001 seconds
-			- #5: 0.002 seconds
-			- #6: 0.003 seconds
-
-			**w/optimization**:
-			- #3:  0.012 seconds
-			- #4:  0.001 seconds
-			- #5:  0.002 seconds
-			- #6:  0.002 seconds
-
-			and the corresponding implementations time trail:
+			<p>and the corresponding implementations time trail:</p>
 
 			basic implementation:
 			<pre><code>
@@ -128,7 +149,7 @@
 				}
 			</code></pre>
 
-			and w/optmizations:
+			<p>and w/optmizations:</p>
 			<pre><code>
 				float min_x = std::min({ x0, x1, x2 });
 				float min_y = std::min({ y0, y1, y2 });
@@ -201,23 +222,26 @@
 			How to get rid of "jaggies"?
 
 			<h3>Implementing Supersampling</h3>
-			The triangle suppersampling algorithm I implemented works as an extension to my rasterizer form task 1.
-			For every pixel to be rasterized, I save `sqrt(sample_rate)*sqrt(sample_rate)` color samples to the sample_buffer for a total of `width*height*sample_rate` color samples.
-			Samples corresponding to the same pixel were saved next to each other in the sample_buffer for convinient indexing.
-			To resolve to the frame_buffer, the `sample_rate` color samples corresponding to a pixel are averaged to produce the color that is actually outputted at said pixel.
-			This implementation required the dynamic resizing of the sample_buffer. Previously it was set to a length of `height*width`, but in order to make enough room for extra
-			samples, the sample_buffer is resized to a length of `width*height*sample_rate` whenever the sample_rate is changed or the render window is resized. Moreover, the fill_pixel
-			method used to rasterize points and lines needed to be modified to account for the fact that, a single pixel no longer corresponds to just a single color in the sample_buffer.
-			For a sample_buffer slot that was to be filled with `color`, instead a `sample_buffer` amount of memory in the sample_buffer is to be filled with that same `color`.
-
-			Supersampling is useful for minimizing "jaggies" (i.e. noticable pixelation)
-			because they create the illusion of smoothness through the gradual drop of intensity of color of rasterized pixels.
-			Jaggies are an artifact of a phenominon known as aliasing, which is (in a nutshell) the loss of information due to undersampling. In our case, the (discrete and limited) number of pixels
-			on our displays undersample the changes in color of underlying (continous/infinite-resolution) svgs causing us to missrepresent shapes.
-			By supersampling (increasing the sample rate per-pixel), instead of having each pixel be strictly one color or another, we can set pixels to be an intermediate intensity color so that it conveys being partially both (i.e at the edge of a shape).
-			This creates color transitions that emulate the smoothness of the underlying shape being rasterized. This intermediate value is computed by making the intensity of the pixel in question proportional to how many of the
-			samples within said pixel contribute to the shape being drawn. This processing of alleviating symptoms of aliasing due to undersampling when
-			discretizing a continous signal (in our case, continous svg vectors -> discrete pixels) is know as antialiasing and it helps our images appear higher resoluiton!
+			<p>
+				The triangle suppersampling algorithm I implemented works as an extension to my rasterizer form task 1.
+				For every pixel to be rasterized, I save `sqrt(sample_rate)*sqrt(sample_rate)` color samples to the sample_buffer for a total of `width*height*sample_rate` color samples.
+				Samples corresponding to the same pixel were saved next to each other in the sample_buffer for convinient indexing.
+				To resolve to the frame_buffer, the `sample_rate` color samples corresponding to a pixel are averaged to produce the color that is actually outputted at said pixel.
+				This implementation required the dynamic resizing of the sample_buffer. Previously it was set to a length of `height*width`, but in order to make enough room for extra
+				samples, the sample_buffer is resized to a length of `width*height*sample_rate` whenever the sample_rate is changed or the render window is resized. Moreover, the fill_pixel
+				method used to rasterize points and lines needed to be modified to account for the fact that, a single pixel no longer corresponds to just a single color in the sample_buffer.
+				For a sample_buffer slot that was to be filled with `color`, instead a `sample_buffer` amount of memory in the sample_buffer is to be filled with that same `color`.
+			</p>
+			<p>
+				Supersampling is useful for minimizing "jaggies" (i.e. noticable pixelation)
+				because they create the illusion of smoothness through the gradual drop of intensity of color of rasterized pixels.
+				Jaggies are an artifact of a phenominon known as aliasing, which is (in a nutshell) the loss of information due to undersampling. In our case, the (discrete and limited) number of pixels
+				on our displays undersample the changes in color of underlying (continous/infinite-resolution) svgs causing us to missrepresent shapes.
+				By supersampling (increasing the sample rate per-pixel), instead of having each pixel be strictly one color or another, we can set pixels to be an intermediate intensity color so that it conveys being partially both (i.e at the edge of a shape).
+				This creates color transitions that emulate the smoothness of the underlying shape being rasterized. This intermediate value is computed by making the intensity of the pixel in question proportional to how many of the
+				samples within said pixel contribute to the shape being drawn. This processing of alleviating symptoms of aliasing due to undersampling when
+				discretizing a continous signal (in our case, continous svg vectors -> discrete pixels) is know as antialiasing and it helps our images appear higher resoluiton!
+			</p>
 
 			<div style="display: flex; flex-direction: column; align-items: center;">
 				<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -257,20 +281,24 @@
 			Look, he's waving hello! He's wearing a shirt, a hat, and jeans-- I wonder what he's dressed up for....
 
 			<h2>Task 4: Barycentric coordinates</h2>
-			Barycentric coordinates (α,β,γ) are a method for describing the "pull" that each vertex of a triangle has on the position
-			of a point.  Any point on a plane (x,y) can be written as the weighted (by the barycentric coordinates) sum of the vertex coordinates: (x, y) = α*A + β*B + γ*C,
-			where (α,β,γ) are proportions (i.e. between 0 and 1) for how close a given point is to (A, B, C) respectiveley. It follows
-			then that for any point within the triangle written in barycentric coordinates, it must be that α + β + γ = 1. To build some intuition, we can think of (α,β,γ) as percentages where 1 (100%) represents that the corresponding vertex has all the pull
-			and 0 (0%) means it has none. Would it make sense for more than one point to be able to have 100% of the pull?
+			<p>
+				Barycentric coordinates (α,β,γ) are a method for describing the "pull" that each vertex of a triangle has on the position
+				of a point.  Any point on a plane (x,y) can be written as the weighted (by the barycentric coordinates) sum of the vertex coordinates: (x, y) = α*A + β*B + γ*C,
+				where (α,β,γ) are proportions (i.e. between 0 and 1) for how close a given point is to (A, B, C) respectiveley. It follows
+				then that for any point within the triangle written in barycentric coordinates, it must be that α + β + γ = 1. To build some intuition, we can think of (α,β,γ) as percentages where 1 (100%) represents that the corresponding vertex has all the pull
+				and 0 (0%) means it has none. Would it make sense for more than one point to be able to have 100% of the pull?
+			</p>
 
-			To visualize this, let (α,β,γ) = (r, g, b), representing proportions for how much red, blue, or green a pixel sampling at the corresponding (x,y) is.
+			<p>To visualize this, let (α,β,γ) = (r, g, b), representing proportions for how much red, blue, or green a pixel sampling at the corresponding (x,y) is.</p>
 			<figure>
 				<img src="images/barycentric_triangle.png" alt="barycentric triangle filled with interpolated rgb values" style="width:50%" />
 				<figcaption>Barycentric triangle.</figcaption>
 			</figure>
 
-			You can see how at, for example, (1,0,0), A has 100% of the pull so it is most red there (since α=r). Analogous statements can be made for B (and it's relationship to β=g) to explain why this is the most green point, as well as to explain why C (γ = b) is the most blue.
-			The gradient of color filling the triangle visualizes the pull that A, B, and C have at any point (x,y) in the triangle.
+			<p>
+				You can see how at, for example, (1,0,0), A has 100% of the pull so it is most red there (since α=r). Analogous statements can be made for B (and it's relationship to β=g) to explain why this is the most green point, as well as to explain why C (γ = b) is the most blue.
+				The gradient of color filling the triangle visualizes the pull that A, B, and C have at any point (x,y) in the triangle.
+			</p>
 
 			<h2>Task 5: "Pixel sampling" for texture mapping</h2>
 			What if I want to fill triangles with something more interesting than perfect RGB colors? Can I fill triangles with... pictures?
@@ -280,19 +308,26 @@
 			In other words, we *sample* the texture that we want to apply to our shape to figure out how to draw it onto the shape we want to render.
 
 			<h3>Implementation</h3>
-			But how does one determine what the corresponding coordiantes between a shape and a texture? This is where uv-mapping comes into play. If you've ever taken a multivariable calculus class you might have heard of this as a math concept. Eseentially, we want to
-			take the coordinates from one space and tranform them into the same coordinates only written in another space (of a different basis). In our case, the two spaces can be thought of as a triangle in our shape and a corresponding traingle in our texture. So we want to have
-			coordinates relative to a point's position in triangles... do we have a tool for that? That's right, Baycentric coordinates from Task 4!
+			<p>
+				But how does one determine what the corresponding coordiantes between a shape and a texture? This is where uv-mapping comes into play. If you've ever taken a multivariable calculus class you might have heard of this as a math concept. Eseentially, we want to
+				take the coordinates from one space and tranform them into the same coordinates only written in another space (of a different basis). In our case, the two spaces can be thought of as a triangle in our shape and a corresponding traingle in our texture. So we want to have
+				coordinates relative to a point's position in triangles... do we have a tool for that? That's right, Baycentric coordinates from Task 4!
+			</p>
+			<p>
+				And with this realization, my `rasterize_textured_triangle` algorithm works nearly identiically to the interpolation from before, the major change being that instead of using the baycentric coordinates as weights for rgb value at a pixel, they are used as weights for
+				picking (u, v) coordinates on the texture.
+			</p>
 
-			And with this realization, my `rasterize_textured_triangle` algorithm works nearly identiically to the interpolation from before, the major change being that instead of using the baycentric coordinates as weights for rgb value at a pixel, they are used as weights for
-			picking (u, v) coordinates on the texture.
+			<p>
+				There is one more issue with this that we need to address. When we try to sample an (x, y) shape point from the (u, v) texture space, how can we be sure that there is always a 1-to-1 correct sample to pick? Well the answer is we can't :(. Fortunateley, we can get pretty
+				close; for this project, I have implemented two solutions to this problem: nearest sampling and bilinear sampling.
+			</p>
 
-			There is one more issue with this that we need to address. When we try to sample an (x, y) shape point from the (u, v) texture space, how can we be sure that there is always a 1-to-1 correct sample to pick? Well the answer is we can't :(. Fortunateley, we can get pretty
-			close; for this project, I have implemented two solutions to this problem: nearest sampling and bilinear sampling.
-
-			Nearest Sampling works by simply picking the single sample point nearest to where (u,v) mapped to. This can often leads to more obvious pixelation when the texture is not high resolution enough.
-			On the other hands, Bilinear Sampling works by picking the 4 texture sample points nearest to (u,v) (i.e. a 2x2 block roughly centered around (u, v)). Then a linear interpolation of the sampled (RGB) values is performed (first horizontally and then vertically) to produce the final
-			value mapped to (x,y).
+			<p>
+				Nearest Sampling works by simply picking the single sample point nearest to where (u,v) mapped to. This can often leads to more obvious pixelation when the texture is not high resolution enough.
+				On the other hands, Bilinear Sampling works by picking the 4 texture sample points nearest to (u,v) (i.e. a 2x2 block roughly centered around (u, v)). Then a linear interpolation of the sampled (RGB) values is performed (first horizontally and then vertically) to produce the final
+				value mapped to (x,y).
+			</p>
 
 			<h3>Result Examples: Nearest Sampling v.s. Bilinear Sampling (1 and 16 sample rates)</h3>
 			<div style="display: flex; flex-direction: column; align-items: center;">
@@ -320,8 +355,10 @@
 				</table>
 			</div>
 
-			You will notice that the effects of Bilinear Sampling are most noticable at `sample_rate=1`. The effects of Bilinear Sampling become are more subtle at `sample_rate=16`. This is due to the fact that the higher sample rate has already done away with a majority of the jaggies that
-			Bilinear Sampling also helps do away with. However, comparing particular details at a time, it is clear that Bilinear Sampling adds continuity here as well.
+			<p>
+				You will notice that the effects of Bilinear Sampling are most noticable at `sample_rate=1`. The effects of Bilinear Sampling become are more subtle at `sample_rate=16`. This is due to the fact that the higher sample rate has already done away with a majority of the jaggies that
+				Bilinear Sampling also helps do away with. However, comparing particular details at a time, it is clear that Bilinear Sampling adds continuity here as well.
+			</p>
 
 			<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
 			Taking it to the next level.
@@ -339,22 +376,29 @@
 				<figcaption>bitmap level formula.</figcaption>
 			</figure>
 
-			But wait, isn't this function continous? What if we compute some level that looks like D = 2.44432? Do we have a sampling level 2.44432 precomputed in our bipmap? Once more, the answer is an unfortunate no :(. However, this is where the following two three selection schemes come into play:
-			Level = Zero, Level = Nearest, and Level_Bilinear.
+			<p>
+				But wait, isn't this function continous? What if we compute some level that looks like D = 2.44432? Do we have a sampling level 2.44432 precomputed in our bipmap? Once more, the answer is an unfortunate no :(. However, this is where the following two three selection schemes come into play:
+				Level = Zero, Level = Nearest, and Level_Bilinear.
+			</p>
+			<p>
+				In task 5, I hardcoded sampling to always occur at bitmap level 0 (full resolution). This is all Level = Zero, or L_Zero entials.
+			</p>
 
-			In task 5, I hardcoded sampling to always occur at bitmap level 0 (full resolution). This is all Level = Zero, or L_Zero entials.
+			<p><em>Level = Nearest</em> builds on the computation of D. Because bitmap levels are limited to integers greater than or equal to 0, this schemes works by simply rounding D (`round(D)`) to find the closest existing level to the one computed.</p>
 
-			*Level = Nearest* builds on the computation of D. Because bitmap levels are limited to integers greater than or equal to 0, this schemes works by simply rounding D (`round(D)`) to find the closest existing level to the one computed.
-
-			Finally, *Level_Bilinear* samples from both level `floor(D)` and level `ceil(D)` (below and above the computed level) and interpolates between the rgb values found at either sample.
+			Finally, </em>Level_Bilinear</em> samples from both level `floor(D)` and level `ceil(D)` (below and above the computed level) and interpolates between the rgb values found at either sample.
 
 			<h3>Pixel Sampling v.s. Level Sampling v.s. Sample Rate</h3>
-			Your choice of pixel/level sampling techniques and sampling rate have tradeoffs between speed, memory usage, and antialiasing power. In general nearest pixel sampling is more costly than bilinear pixel sampling simply because of the extra computation of interpolating values between
-			samples. The same can be said about level nereast and bilinear sampling. However, sampling a texture from relativeley distant sample points or suddenly switching mipmpap levels can cause disortion (e.g. jaggies). In both cases, using bilinear over nearest sampling antialiases
-			those suddden changes, so perhaps the computational cost can be justified.
+			<p>
+				Your choice of pixel/level sampling techniques and sampling rate have tradeoffs between speed, memory usage, and antialiasing power. In general nearest pixel sampling is more costly than bilinear pixel sampling simply because of the extra computation of interpolating values between
+				samples. The same can be said about level nereast and bilinear sampling. However, sampling a texture from relativeley distant sample points or suddenly switching mipmpap levels can cause disortion (e.g. jaggies). In both cases, using bilinear over nearest sampling antialiases
+				those suddden changes, so perhaps the computational cost can be justified.
+			</p>
 
-			Similar to the relationship between nearest and linear sampling, altering the sample rate from low to high helps antialias images, but it comes at the cost of additional computation (more sample points to check against traingles), but also memory. The higher the sampling rate, the
-			more memory must be allocated to the sample buffer to hold more samples!
+			<p>
+				Similar to the relationship between nearest and linear sampling, altering the sample rate from low to high helps antialias images, but it comes at the cost of additional computation (more sample points to check against traingles), but also memory. The higher the sampling rate, the
+				more memory must be allocated to the sample buffer to hold more samples!
+			</p>
 
 			<div style="display: flex; flex-direction: column; align-items: center;">
 				<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -381,7 +425,7 @@
 				</table>
 			</div>
 
-			Notice the different sampling effects through the pixel inspector. Uisng our most basic techniques, you'll notice we achieve our highest frequency output (i.e most pixelated) images. This is in contrast to using linear sampling and/or level sampling.
+			<p>Notice the different sampling effects through the pixel inspector. Uisng our most basic techniques, you'll notice we achieve our highest frequency output (i.e most pixelated) images. This is in contrast to using linear sampling and/or level sampling.</p>
 
 
 			<h2>Task 7: Draw Something Creative!</h2>
