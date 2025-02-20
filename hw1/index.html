@@ -27,7 +27,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>CS184/284A Spring 2025 Homework 1: Rasterizer - Write-Up</h1>
+			<h1>CS184/284A Spring 2025 HW 1: Rasterizer - Write-Up</h1>
 			<div style="text-align: center;">By Joel Castro </div>
 
 			<br>
@@ -291,7 +291,7 @@
 
 			<p>To visualize this, let (α,β,γ) = (r, g, b), representing proportions for how much red, blue, or green a pixel sampling at the corresponding (x,y) is.</p>
 			<figure>
-				<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/svg4_sample_rate_9.png/barycentric_triangle.png" alt="barycentric triangle filled with interpolated rgb values" style="width:50%" />
+				<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/barycentric_triangle.png" alt="barycentric triangle filled with interpolated rgb values" style="width:50%" />
 				<figcaption>Barycentric triangle.</figcaption>
 			</figure>
 
@@ -334,21 +334,21 @@
 				<table style="width: 100%; text-align: center; border-collapse: collapse;">
 					<tr>
 						<td style="text-align: center;">
-							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/svg4_sample_rate_9.png/linear_sampling1.png" width="400px" />
+							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/linear_sampling1.png" width="400px" />
 							<figcaption>nearest sampling w/sample rate=1.</figcaption>
 						</td>
 						<td style="text-align: center;">
-							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/svg4_sample_rate_9.png/bilinear_sampling1.png" width="400px" />
+							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/bilinear_sampling1.png" width="400px" />
 							<figcaption>bilinear sampling w/sample rate=1.</figcaption>
 						</td>
 					</tr>
 					<tr>
 						<td style="text-align: center;">
-							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/svg4_sample_rate_9.png/linear_sampling16.png" width="400px" />
+							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/linear_sampling16.png" width="400px" />
 							<figcaption>nearest sampling w/sample rate=16.</figcaption>
 						</td>
 						<td style="text-align: center;">
-							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/svg4_sample_rate_9.png/bilinear_sampling16.png" width="400px" />
+							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/bilinear_sampling16.png" width="400px" />
 							<figcaption>bilinear sampling w/sample rate=16.</figcaption>
 						</td>
 					</tr>
@@ -372,7 +372,7 @@
 			the pixel texture coordinates of (u_dx, v_dx) corresponding to (x+1, y), and (u_dy, v_dy) corresponding to (x, y+1). These allow us to determine the "stretching" factor discussed earlier that will help with computing a sensible mipmap level. More formally, the mipmap level (D) we sample
 			a texture from at a given point is given by:
 			<figure>
-				<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/svg4_sample_rate_9.png/level_formula.png" alt="bitmap level formula" style="width:50%" />
+				<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/level_formula.png" alt="bitmap level formula" style="width:50%" />
 				<figcaption>bitmap level formula.</figcaption>
 			</figure>
 
@@ -404,21 +404,21 @@
 				<table style="width: 100%; text-align: center; border-collapse: collapse;">
 					<tr>
 						<td style="text-align: center;">
-							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/svg4_sample_rate_9.png/L_Zero_AND_P_Nearest.png" width="400px" />
+							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/L_Zero_AND_P_Nearest.png" width="400px" />
 							<figcaption>L_Zero + P_Nearest.</figcaption>
 						</td>
 						<td style="text-align: center;">
-							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/svg4_sample_rate_9.png/L_Zero_AND_P_Linear.png" width="400px" />
+							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/L_Zero_AND_P_Linear.png" width="400px" />
 							<figcaption>L_Zero + P_Linear.</figcaption>
 						</td>
 					</tr>
 					<tr>
 						<td style="text-align: center;">
-							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/svg4_sample_rate_9.png/L_Nearest_AND_P_Nearest.png" width="400px" />
+							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/L_Nearest_AND_P_Nearest.png" width="400px" />
 							<figcaption>L_Nearest + P_Nearest.</figcaption>
 						</td>
 						<td style="text-align: center;">
-							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/svg4_sample_rate_9.png/L_Nearest_AND_P_Linear.png" width="400px" />
+							<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/L_Nearest_AND_P_Linear.png" width="400px" />
 							<figcaption>L_Nearest + P_Linear.</figcaption>
 						</td>
 					</tr>
