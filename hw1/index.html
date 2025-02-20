@@ -274,7 +274,21 @@
 				<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/random_sampling_eg.png" alt="random sampling example" style="width:50%" />
 				<figcaption>Look how fluffy and cute these once sharp and scary shapes have become 😁.</figcaption>
 			</figure>
-			Here is the same example at different sampling rates. Notice how even at the same sampling rate as the above example, no two renders are exactly the same!
+			<p>Here is the same example at different sampling rates. Notice how even at the same sampling rate as the above example, no two renders are exactly the same!</p>
+
+			<p>This was implemented by simply computing a random position within every pixel to take each sample from like so:</p>
+			<pre><code>
+				*/In pseudocode/*
+				for (i in bounding_box.width) {
+					for (j in bounding_box.height) {
+						double x = i + (double)std::rand() / RAND_MAX;
+	                			double y = j + (double)std::rand() / RAND_MAX;
+						...
+						//sampling at (x, y)
+					}
+				}
+			</code></pre>
+							
 			<div style="display: flex; flex-direction: column; align-items: center;">
 				<table style="width: 100%; text-align: center; border-collapse: collapse;">
 					<tr>
@@ -299,7 +313,10 @@
 					</tr>
 				</table>
 			</div>
-			Interestingly, the shapes begin to look sharp again once we increase the sampling rate. On one hand, the randomness could make for a cool stylistic effect, on another, shapes appear just as (if not less) jagged as normal sampling within the same amount of sample increases. 
+			<p>
+				Interestingly, the shapes begin to look sharp again once we increase the sampling rate. On one hand, the randomness could make for a cool stylistic effect, on another, 
+				shapes appear just as jagged as normal sampling within the same amount of sample increases.
+			</p>
 				
 			<h2>Task 3: Transforms</h2>
 			Next, I implemented 3 transforms based on: <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform">https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform</a>.
