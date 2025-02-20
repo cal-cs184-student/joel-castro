@@ -281,7 +281,7 @@
 				*/In pseudocode/*
 				for (i in bounding_box.width) {
 					for (j in bounding_box.height) {
-						double x = i + (double)std::rand() / RAND_MAX;
+						double x = i + (double)std::rand() / RAND_MAX; //(i.e. add a number between 0 and 1)
 	                			double y = j + (double)std::rand() / RAND_MAX;
 						...
 						//sampling at (x, y)
