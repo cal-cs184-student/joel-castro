@@ -145,17 +145,17 @@ Of course, we cannot display at infinite resolution, so, in practice, we need to
 			
 			we compute a point \( S(u,v) \) on the Bézier surface as follows:
 			
-			\begin{enumerate}
-			    \item Compute intermediate control points by evaluating each Bézier curve along \( u \):
+			<ul>
+			    <li> Compute intermediate control points by evaluating each Bézier curve along \( u \):</li>
 			    \begin{equation}
 			    \mathcal{C'}_i = \text{DeCasteljausAlgorithm}(\{ c_{i,j} \}_{j=1}^{n}, u), \quad i = 1, \dots, m
 			    \end{equation}
 			
-			    \item Interpolate over the computed points along \( v \):
+			    <li> Interpolate over the computed points along \( v \):</li>
 			    \begin{equation}
 			    S(u,v) = \text{DeCasteljausAlgorithm}(\{ \mathcal{C'}_i \}_{i=1}^{m}, v).
 			    \end{equation}
-			\end{enumerate}
+			</ul>
 			</p>
 				
 			<p>Thus, we first interpolate every Bézier curve in the patch at \( u \), then interpolate across the resulting points along \( v \), 
