@@ -87,7 +87,7 @@
 			        \mathcal{C'} = \{ \text{lerp}(c_i, c_{i+1}, t) \mid i = 1, \dots, n-1 \}
 			        \end{equation}
 			        
-			        Equation (3) describes my implementation of the BezierCurbe::evaluateStep function, where the linear interpolation function is defined as:
+			        The above equation describes my implementation of the BezierCurbe::evaluateStep function, where the linear interpolation function is defined as:
 			        
 			        \begin{equation}
 			        \text{lerp}(c_1, c_2, t) = (1 - t)c_1 + t c_2.
@@ -198,33 +198,222 @@ Of course, we cannot display at infinite resolution, so, in practice, we need to
 
 			<h3>Part 3: Area-weighted vertex normals</h3>
 			<p>My implementation involved, given a vertex, iterating through all faces/triangles incident to that vertex. Using the halfEdge data structure methods/variables, per triangle, I accessed the
-positions of all 3 vertices (call them P0, P1, and P2) that composed it. Next, I defined vectors AB and AC, equal to P1 - P0 and P2  - P0 respectiveley. The normal vector of any given triangle
-was given by the cross product AB x AC, and the area by ||AB x AC||/2. Multiplying corresponding triangle areas and normals and adding them up accross all incident triangles resulted in the
-desired (unormalized) area-weighted vertex normals. All that was left to do was normalize this sum of weighted vectors for the final returned area-weighted vertex normal.</p>
+			positions of all 3 vertices (call them P0, P1, and P2) that composed it. Next, I defined vectors AB and AC, equal to P1 - P0 and P2  - P0 respectiveley. The normal vector of any given triangle
+			was given by the cross product AB x AC, and the area by ||AB x AC||/2. Multiplying corresponding triangle areas and normals and adding them up accross all incident triangles resulted in the
+			desired (unormalized) area-weighted vertex normals. All that was left to do was normalize this sum of weighted vectors for the final returned area-weighted vertex normal.</p>
+
+			<p>Comparing teapot shading with and without vertex normals.</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="images/sect1_part2.png" width="400px" />
+							<figcaption>Teapot without vertex shading.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="images/sect2_part3.png" width="400px" />
+							<figcaption>Teapot with vertex shading.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
 			
 			<h3>Part 4: Edge flip</h3>
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+			<p>I updated the pointers of each mesh element relevant to the flip according to the diagram below. I detail the state of all relevant pointers before and after the flip operation.</p>
 
+			<figure>
+				<img src="images/sect2_part4_diagram.png" alt="Flip diagram" style="width:50%" />
+				<figcaption>Edge flip, pointer diagram.</figcaption>
+			</figure>
+			
+			<p>Initially, I had only written out these changes for halfedges, and the resulting implementation resulted in holes in the mesh. After also working out the pointer logic for edges, vertices, and
+			faces, it became clear that the only other additional relevant change was the half-edge associated with each face. As per the diagramming logic I drew out, the half-edges corresponding to either
+			face actually flip, so this had to be reflected in my implementation.</p>
+			The description of the flipping problem scared me straight enough to make my diagram quite thorough, as a result, there wasn't much debugging!
+
+			<p>Here is the teapot before and after edge flips:</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="images/sect2_part4_before.png" width="400px" />
+							<figcaption>Teapot before edge flips.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="images/sect2_part4_after.png" width="400px" />
+							<figcaption>Teapot after edge flips.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			
 			<h3>Part 5: Edge split</h3>
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+			<p>My edge-splitting implementation followed much the same process as my flip operation implementation. I wrote out the pointers of pointers to/from neighboring elements before and after the flip
+			operation. I concluded that I would need to add 6 new half-edges, 3 edges, 2 faces, and 1 vertex to accomplish this task. Their connections to maintain the desired relationships are described in
+			detail in the diagram:</p>
+			<figure>
+				<img src="images/sect2_part5_diagram.png" alt="Split diagram" style="width:50%" />
+				<figcaption>Edge split, pointer diagram.</figcaption>
+			</figure>
+			
+			<p>Once again, virtually all my "debugging" was done before coding when writing out the pointer updating logic. Even still, I encountered some minor issues, including disappearing faces (1), new vertices
+			spawning far away from the desired edge midpoint (2), and not being able to remove seemingly redundant pointer re-assignments (3). A re-read of the code revealed that issue (1) turned out to be simply because
+			I was continuing to modify existing face instances instead of creating new ones. Creating new face instances, f3 and f4, resolved this.  Issue (2) was simply because I overlooked setting the position
+			for the new vertex. To resolve the issue, I made sure to make the new position the average position between the vertices incident to the given edge e0. Finally, "issue" (3) wasn't really an issue as I
+			simply put back what I thought was a redundant pointer re-assignment, and it went back to working. Specifically, this was the line(s) that I uncommented:
+			```
+			//I'm confused about why I need to set f1's halfedge to h
+			//according to my diagram (and the re-written version below), it should be redundant
+			//f1: e0->halfedge()->face()->halfedge() = e0->halfedge();
+			//otherwise, wouldn't this mean that, for the given edge, while it points to a face, that face does not point back to it 
+			f1->halfedge() = h; //(3)
+			//e0->halfedge()->face()->halfedge() = e0->halfedge();
+			f2->halfedge() = h_twin; //(same question (3) goes for h_twin here)
+			```
 
+			<p>See the effects of the edge splitting here:</p>
+			<figure>
+				<img src="images/sect2_part5_subdivisionExample.png" alt="Split face example" style="width:50%" />
+				<figcaption>Subdivided face example.</figcaption>
+			</figure>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="images/sect2_part5_afterSplits.png" width="400px" />
+							<figcaption>Teapot face after a split.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="images/sect2_part5_afterSplitsANDFlips.png" width="400px" />
+							<figcaption>Teapot face before a split.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+
+				
 			<h3>Part 6: Loop subdivision for mesh upsampling</h3>
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+			<p>No amount of diagramming could make this task less painful.... Nevertheless, it is finally done, and here's how I went about it:
+			Adopting the suggested separation of tasks, I first (1) computed new positions for existing vertices in the input mesh, using the Loop subdivision rules,
+			and store them in Vertex::newPosition. To accomplish this, I iterated over vertices and used the half-edge data structure to access all necessary neighboring
+			elements to compute things like the `originalNeighborPositionSum`. Also, I "marked" each vertex as being from the o.g. mesh by setting their isNew attribute to false.
+			Secondly, I (2) computed the updated vertex positions associated with edges and stored them in their respective Edge::newPosition attributes by iterating over all edges.
+			Next, I (3 & 4) applied splitting operations to all edges by calling my implementation in part 4, and I flipped new edges to the appropriate orientation utilizing my implementation
+			in part 5. This was achieved by first iterating over all edges and setting their isNew attribute to true, taking note of which new edges are actually just an original edge
+			split in half (and setting their isNew=false after the fact to prevent infinite loops). Moreover, only edges that were new and connected new to old vertices were flipped. Finally,
+			I set the position of each vertex to its corresponding computed new positions (that were temporarily stored in the newPosition attribute), and I reset the isNew attributes in
+			preparation for the next subdivision. There were plenty of bugs this time around, but the most notable was incorrect vertexPositions; here is some cool bug art that resulted:
+			</p>
+			<figure>
+				<img src="images/sect2_part6_bugArt.png" alt="upsampling bug art" style="width:50%" />
+				<figcaption>Upsampling bug art.</figcaption>
+			</figure>
+			<p>I debugged this by printing out positions as they were set at various locations (e.g., new vs old vetex position calculations) and using this to narrow down the root cause. The image
+			above was the result of new vertices never being updated out of the default position (0, 0, 0). Once diagnosed, it was a simple update from the Edge::newPosition attributes they were
+			saved to, over to the actual position attributes of the new vertices that fixed it.
+			You'd think that would be the end of it, but it turns out that some of the so-called "redundant" pointer reassignments in parts 4 and 5 were not all that redundant as they were causing subdivision
+			artifcats past the first subdivion. After trying just about everything, in my despair, I uncommented these reassignments and was pleasantly surprised that this resolved the issue. Remember kids, 
+			"Correctness is more important than optimization" :).</p>
 
-			<h2>(Optional) Section III: Potential Extra Credit - Art Competition: Model something Creative</h2>
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+			<p>Finally, here is my corrected implementation at work. The more we subdivide a mesh, the smoother it appears to become. In other words, sharp edges become more and more rounded:</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="images/sect2_part4_before.png" width="400px" />
+							<figcaption>Subdivision level 0.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="images/sect2_part6_subdiv1.png" width="400px" />
+							<figcaption>Subdivision level 1.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="images/sect2_part6_subdiv2.png" width="400px" />
+							<figcaption>Subdivision level 2.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="images/sect2_part6_subdiv3.png" width="400px" />
+							<figcaption>Subdivision level 3.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
 
-			<h2>Additional Notes (please remove)</h2>
-			<ul>
-				<li>You can also add code if you'd like as so: <code>code code code</code></li>
-				<li>
-					If you'd like to add math equations,
-					<ul>
-						<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-						<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-					</ul>
-				</li>
-			</ul>
+			<p>The same upsampling implementation applied to a cube mesh:</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="images/sect2_part6_cubeSubdiv0.png" width="400px" />
+							<figcaption>Cube at subdivision level 0.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="images/sect2_part6_cubeSubdiv1.png" width="400px" />
+							<figcaption>Cube at Subdivision level 1.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="images/sect2_part6_cubeSubdiv2.png" width="400px" />
+							<figcaption>Cube at subdivision level 2.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="images/sect2_part6_cubeSubdiv3.png" width="400px" />
+							<figcaption>Cube at ubdivision level 3.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="images/sect2_part6_cubeSubdiv4.png" width="400px" />
+							<figcaption>Cube at subdivision level 4.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>Hmm, that cube is turning into much more of a bumpy asymmetric ball the more we subdivide. What if we wanted to maintain symmetry and retain more of the original shape?
+			Well, we can preprocess the cube with splits in flips like so:</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="images/sect2_part6_preProsdCubeSubdiv0.png" width="400px" />
+							<figcaption>Pre-processed cube at subdivision level 0.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="images/sect2_part6_preProsdCubeSubdiv1.png" width="400px" />
+							<figcaption>Pre-processed cube at subdivision level 1.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="images/sect2_part6_preProsdCubeSubdiv2.png" width="400px" />
+							<figcaption>Pre-processed cube at subdivision level 2.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="images/sect2_part6_preProsdCubeSubdiv3.png" width="400px" />
+							<figcaption>Pre-processed cube at subdivision level 3.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="images/sect2_part6_preProsdCubeSubdiv4.png" width="400px" />
+							<figcaption>Pre-processed cube at subdivision level 4.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			
+			<p>
+			I placed more edges near the corners of the cube (splitting previously split edges until there were many edges near the corners).
+			By doing this, the new vertex points that are positioned at the ~average position of their neighbors are now going to be placed closer to the initial
+			control cage than before (since more new points near these edges means the averages of neighbors will be closer to there). As a result, subdividing here
+			still maintained much of the box shape, and the shape of the box is far more symmetric.
+			</p>
+			
+			<h2>Section III: Potential Extra Credit - Art Competition: Model something Creative</h2>
+			Imma does this later :D.
 		</div>
 	</body>
 </html>
