@@ -48,7 +48,7 @@
 	-->
 
 			<h2>Overview</h2>
-			In the following writeup I describe my jorney to creating a working MeshEdit tool. At a high-level, this means creatings modems
+			In the following write-up, I describe my journey to creating a working MeshEdit tool. At a high-level, this means creatings modems
 			for displaying 3D geometry. For instance, using bezier control-points to define 3D curves or "patches", or a traingle-mesh-based
 			editor that uses edge splitting and manipulation to implement a subdivision scheme that gets meshes to appear at desired smoothness.
 			I am really happy with the insights I gained from the project on data structures used to represent geometry (efficiently). Get ready 
@@ -64,7 +64,7 @@
 			\begin{equation}
 			\mathcal{C} = \{ c_1, c_2, \dots, c_n \}, \quad c_i \in \mathbb{R}^d
 			\end{equation}
-			we assume they are ordered such that:
+			We assume they are ordered such that:
 			\begin{equation}
 			x_1 \leq x_2 \leq \dots \leq x_n, \quad \text{where } c_i = (x_i, y_i).
 			\end{equation}
@@ -100,7 +100,7 @@
 			    \mathcal{B} = \bigcup_{t \in (0,1)} \{\mathcal{C'}_t\}
 			    $
 
-Of course, we cannot display at infinite resolution so, in practice, we need to sample at discrete values of t\in[0,1].
+Of course, we cannot display at infinite resolution, so, in practice, we need to sample at discrete values of t\in[0,1].
 			
 			<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
 			<div style="display: flex; flex-direction: column; align-items: center;">
