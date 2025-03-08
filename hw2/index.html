@@ -57,8 +57,51 @@
 			<h2>Section I: Bezier Curves and Surfaces</h2>
 
 			<h3>Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+			Castelijau is an algorithm for linearly interpolating every point on the Bezier curve corresponding to a set of control points.
+			My implementation was constructed using the following logic:
 
+			Given a set of control points:  
+			\begin{equation}
+			\mathcal{C} = \{ c_1, c_2, \dots, c_n \}, \quad c_i \in \mathbb{R}^d
+			\end{equation}
+			we assume they are ordered such that:
+			\begin{equation}
+			x_1 \leq x_2 \leq \dots \leq x_n, \quad \text{where } c_i = (x_i, y_i).
+			\end{equation}
+			
+			We compute the set of Bézier curve points, \( \mathcal{B} \), using the following procedure:
+			
+			\begin{itemize}
+			    \item \textbf{Initialization:} \( \mathcal{B} \gets \emptyset \).
+			    
+			    \item \textbf{For each parameter \( t \in (0,1) \), perform De Casteljau's algorithm:}
+			    
+			    \begin{itemize}
+			        \item Initialize \( \mathcal{C'} = \mathcal{C} \).
+			        
+			        \item While \( |\mathcal{C'}| > 1 \), compute the intermediate points iteratively:
+			        
+			        \begin{equation}
+			        \mathcal{C'} = \{ \text{lerp}(c_i, c_{i+1}, t) \mid i = 1, \dots, n-1 \}
+			        \end{equation}
+			        
+			        Equation (3) describes my implementation of the BezierCurbe::evaluateStep function, where the linear interpolation function is defined as:
+			        
+			        \begin{equation}
+			        \text{lerp}(c_1, c_2, t) = (1 - t)c_1 + t c_2.
+			        \end{equation}
+			        
+			        \item The final interpolated curve point \( \mathcal{C'} \) is added to \( \mathcal{B} \).
+			    \end{itemize}
+			\end{itemize}
+			
+			\textbf{Return the computed Bézier curve points:}  
+			    $
+			    \mathcal{B} = \bigcup_{t \in (0,1)} \{\mathcal{C'}_t\}
+			    $
+
+Of course, we cannot display at infinite resolution so, in practice, we need to sample at discrete values of t\in[0,1].
+			
 			<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
 			<div style="display: flex; flex-direction: column; align-items: center;">
 				<table style="width: 100%; text-align: center; border-collapse: collapse;">
