@@ -48,19 +48,21 @@
 	-->
 
 			<h2>Overview</h2>
-			In the following write-up, I describe my journey to creating a working MeshEdit tool. At a high-level, this means creatings modems
+			<p>In the following write-up, I describe my journey to creating a working MeshEdit tool. At a high-level, this means creatings modems
 			for displaying 3D geometry. For instance, using bezier control-points to define 3D curves or "patches", or a traingle-mesh-based
 			editor that uses edge splitting and manipulation to implement a subdivision scheme that gets meshes to appear at desired smoothness.
 			I am really happy with the insights I gained from the project on data structures used to represent geometry (efficiently). Get ready 
 			to deal with a lot of pointers!
+			</p>
 
 			<h2>Section I: Bezier Curves and Surfaces</h2>
 
 			<h3>Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
-			Castelijau is an algorithm for linearly interpolating every point on the Bezier curve corresponding to a set of control points.
+			<p>Castelijau is an algorithm for linearly interpolating every point on the Bezier curve corresponding to a set of control points.
 			My implementation was constructed using the following logic:
+			</p>
 
-			Given a set of control points:  
+			<p>Given a set of control points:  
 			\begin{equation}
 			\mathcal{C} = \{ c_1, c_2, \dots, c_n \}, \quad c_i \in \mathbb{R}^d
 			\end{equation}
@@ -99,6 +101,7 @@
 			    $
 			    \mathcal{B} = \bigcup_{t \in (0,1)} \{\mathcal{C'}_t\}
 			    $
+			</p>
 
 Of course, we cannot display at infinite resolution, so, in practice, we need to sample at discrete values of t\in[0,1].
 			
