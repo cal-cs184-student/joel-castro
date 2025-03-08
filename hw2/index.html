@@ -260,16 +260,18 @@ Of course, we cannot display at infinite resolution, so, in practice, we need to
 			spawning far away from the desired edge midpoint (2), and not being able to remove seemingly redundant pointer re-assignments (3). A re-read of the code revealed that issue (1) turned out to be simply because
 			I was continuing to modify existing face instances instead of creating new ones. Creating new face instances, f3 and f4, resolved this.  Issue (2) was simply because I overlooked setting the position
 			for the new vertex. To resolve the issue, I made sure to make the new position the average position between the vertices incident to the given edge e0. Finally, "issue" (3) wasn't really an issue as I
-			simply put back what I thought was a redundant pointer re-assignment, and it went back to working. Specifically, this was the line(s) that I uncommented:
-			```
-			//I'm confused about why I need to set f1's halfedge to h
-			//according to my diagram (and the re-written version below), it should be redundant
-			//f1: e0->halfedge()->face()->halfedge() = e0->halfedge();
-			//otherwise, wouldn't this mean that, for the given edge, while it points to a face, that face does not point back to it 
-			f1->halfedge() = h; //(3)
-			//e0->halfedge()->face()->halfedge() = e0->halfedge();
-			f2->halfedge() = h_twin; //(same question (3) goes for h_twin here)
-			```
+			simply put back what I thought was a redundant pointer re-assignment, and it went back to working. Specifically, this was the line(s) that I uncommented:</p>
+			<pre>
+			      <code>
+				//I'm confused about why I need to set f1's halfedge to h
+				//according to my diagram (and the re-written version below), it should be redundant
+				//f1: e0->halfedge()->face()->halfedge() = e0->halfedge();
+				//otherwise, wouldn't this mean that, for the given edge, while it points to a face, that face does not point back to it 
+				f1->halfedge() = h; //(3)
+				//e0->halfedge()->face()->halfedge() = e0->halfedge();
+				f2->halfedge() = h_twin; //(same question (3) goes for h_twin here)
+			      </code>
+			</pre>
 
 			<p>See the effects of the edge splitting here:</p>
 			<figure>
@@ -281,11 +283,11 @@ Of course, we cannot display at infinite resolution, so, in practice, we need to
 					<tr>
 						<td style="text-align: center;">
 							<img src="images/sect2_part5_afterSplits.png" width="400px" />
-							<figcaption>Teapot face after a split.</figcaption>
+							<figcaption>Teapot face after splits.</figcaption>
 						</td>
 						<td style="text-align: center;">
 							<img src="images/sect2_part5_afterSplitsANDFlips.png" width="400px" />
-							<figcaption>Teapot face before a split.</figcaption>
+							<figcaption>Teapot face after splits AND flips.</figcaption>
 						</td>
 					</tr>
 				</table>
@@ -308,7 +310,7 @@ Of course, we cannot display at infinite resolution, so, in practice, we need to
 				<img src="images/sect2_part6_bugArt.png" alt="upsampling bug art" style="width:50%" />
 				<figcaption>Upsampling bug art.</figcaption>
 			</figure>
-			<p>I debugged this by printing out positions as they were set at various locations (e.g., new vs old vetex position calculations) and using this to narrow down the root cause. The image
+			<p>I can't with the holes- I was actually gagging trying to debug this.... Still, I managed to figure it out by printing out positions as they were set at various locations (e.g., new vs old vetex position calculations) and using this to narrow down the root cause. The image
 			above was the result of new vertices never being updated out of the default position (0, 0, 0). Once diagnosed, it was a simple update from the Edge::newPosition attributes they were
 			saved to, over to the actual position attributes of the new vertices that fixed it.
 			You'd think that would be the end of it, but it turns out that some of the so-called "redundant" pointer reassignments in parts 4 and 5 were not all that redundant as they were causing subdivision
