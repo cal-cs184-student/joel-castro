@@ -191,14 +191,17 @@ Of course, we cannot display at infinite resolution, so, in practice, we need to
 			<p>Here's a cool rendering using Bezier patches:</p>
 			<figure>
 				<img src="images/sect1_part2.png" alt="Teapot" style="width:50%" />
-				<figcaption>teapot.bez rendering of my implementation.</figcaption>
+				<figcaption>teapot.bez rendering with my implementation.</figcaption>
 			</figure>
 
 			<h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
 			<h3>Part 3: Area-weighted vertex normals</h3>
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
+			<p>My implementation involved, given a vertex, iterating through all faces/triangles incident to that vertex. Using the halfEdge data structure methods/variables, per triangle, I accessed the
+positions of all 3 vertices (call them P0, P1, and P2) that composed it. Next, I defined vectors AB and AC, equal to P1 - P0 and P2  - P0 respectiveley. The normal vector of any given triangle
+was given by the cross product AB x AC, and the area by ||AB x AC||/2. Multiplying corresponding triangle areas and normals and adding them up accross all incident triangles resulted in the
+desired (unormalized) area-weighted vertex normals. All that was left to do was normalize this sum of weighted vectors for the final returned area-weighted vertex normal.</p>
+			
 			<h3>Part 4: Edge flip</h3>
 			Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
