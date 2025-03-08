@@ -104,53 +104,53 @@
 
 Of course, we cannot display at infinite resolution, so, in practice, we need to sample at discrete values of t\in[0,1].
 			
-			<p>Here are some rendered Bezier curves.</p>
+			<p>Here is a demonstration of a 6-control-point Bezier curve.</p>
 			<div style="display: flex; flex-direction: column; align-items: center;">
 				<table style="width: 100%; text-align: center; border-collapse: collapse;">
 					<tr>
 						<td style="text-align: center;">
 							<img src="images/sect1_part1_completeCurve.png" width="400px" />
-							<figcaption>Caption goes here.</figcaption>
+							<figcaption>Bezier Curve.</figcaption>
 						</td>
 						<td style="text-align: center;">
 							<img src="images/sect1_part1_completeCurveModified.png" width="400px" />
-							<figcaption>Caption goes here.</figcaption>
+							<figcaption>Same Bezier Curve with modified control points and parameter t (via GUI controls).</figcaption>
 						</td>
 					</tr>
 				</table>
 			</div>
 
-			<p>And here is one of them again as we step through the levels of evaluation:</p>
+			<p>And here is the same Bezier curve as we step through the levels of evaluation:</p>
 			<div style="display: flex; flex-direction: column; align-items: center;">
 				<table style="width: 100%; text-align: center; border-collapse: collapse;">
 					<tr>
 						<td style="text-align: center;">
 							<img src="images/sect1_part1_lerp0.png" width="400px" />
-							<figcaption>Caption goes here.</figcaption>
+							<figcaption>0th iteration of De Casteljau's algorithm.</figcaption>
 						</td>
 						<td style="text-align: center;">
 							<img src="images/sect1_part1_lerp1.png" width="400px" />
-							<figcaption>Caption goes here.</figcaption>
+							<figcaption>1st iteration of De Casteljau's algorithm.</figcaption>
 						</td>
 					</tr>
 					<tr>
 						<td style="text-align: center;">
 							<img src="images/sect1_part1_lerp2.png" width="400px" />
-							<figcaption>Caption goes here.</figcaption>
+							<figcaption>Iteration 2 of De Casteljau's algorithm.</figcaption>
 						</td>
 						<td style="text-align: center;">
 							<img src="images/sect1_part1_lerp3.png" width="400px" />
-							<figcaption>Caption goes here.</figcaption>
+							<figcaption>Iteration 3 of De Casteljau's algorithm.</figcaption>
 						</td>
 					</tr>
 					<tr>
 						<td style="text-align: center;">
 							<img src="images/sect1_part1_lerp4.png" width="400px" />
-							<figcaption>Caption goes here.</figcaption>
+							<figcaption>Iteration 4 of De Casteljau's algorithm.</figcaption>
 						</td>
 						<td style="text-align: center;">
 							<img src="images/sect1_part1_lerp5.png" width="400px" />
-							<figcaption>Caption goes here.</figcaption>
+							<figcaption>Iteration 5 of De Casteljau's algorithm.</figcaption>
 						</td>
 					</tr>
 				</table>
@@ -187,6 +187,12 @@ Of course, we cannot display at infinite resolution, so, in practice, we need to
 			<p>Thus, we first interpolate every Bézier curve in the patch at \( u \), then interpolate across the resulting points along \( v \), 
 			yielding a single point \( S(u, v) \) on the surface. The Bézier surface is defined over all points \( (u, v) \) satisfying (u, v) \in [0,1] \times [0,1]. 
 			To generate a triangular mesh representation of the surface, one can sample \( (u,v) \) at discrete intervals and use the points to rasterize an approximation.</p>
+
+			<p>Here's a cool rendering using Bezier patches:</p>
+			<figure>
+				<img src="images/sect1_part2.png" alt="Teapot" style="width:50%" />
+				<figcaption>teapot.bez rendering of my implementation.</figcaption>
+			</figure>
 
 			<h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
