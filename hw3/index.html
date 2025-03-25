@@ -249,7 +249,7 @@
 			</p>
 			<h4>Importance Sampling Direct Lighting</h4>
 			<p>
-				On the other hand, you can think about this illumination problem in terms ofan  object's relative position to the sources of light in a scene: is an object far from a light?
+				On the other hand, you can think about this illumination problem in terms of an  object's relative position to the sources of light in a scene: is an object far from a light?
 				is one object hidden behind another? These are the things the importance sampling approach takes into consideration. My implementation of this lighting scheme involves
 				iterating over every light in the scene's set of lights; if the light is a point it is sampled only once, and if it is not a point light source it is sampled (like before)
 				a number of times proportional to the number of light sources there are. Now, what does this sampling scheme look like? Rather than modeling every point as a semi-circle
@@ -311,7 +311,7 @@
 			<h3>Comparing uniform hemisphere sampling and lighting sampling.</h3>
 			It is clear from the above pictures that non-hemisphere sampling produces almost a ring-lighting effect.
 			This is in contrast to hemispheric which can feel more noisy. Even as the sampling rate increased in the
-			bunny scene without hemispheres, it never quite looked as sharp as when we added in the hemisphere in the bunny
+			bunny scene without hemispheres, it never quite looked as "vectorized"-esk (y'know?) as when we added in the hemisphere in the bunny
 			scene example with both methods.
 
 			<h2>Part 4: Global Illumination</h2>
@@ -569,11 +569,11 @@
 				<table style="width: 100%; text-align: center; border-collapse: collapse;">
 					<tr>
 						<td style="text-align: center;">
-							<img src="images/bunny.png" width="400px" />
+							<img src="images/bunny_rate.png" width="400px" />
 							<figcaption>Sampling Heat-Map (in progress).</figcaption>
 						</td>
 						<td style="text-align: center;">
-							<img src="images/bunny_rate.png" width="400px" />
+							<img src="images/bunny.png" width="400px" />
 							<figcaption>Dynamically sampled bunny render.</figcaption>
 						</td>
 					</tr>
