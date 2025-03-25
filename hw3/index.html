@@ -73,7 +73,7 @@
 				as well as barycentric coordinates describing the intersect point's location within said triangle. The scheme is described succinctly in the following:
 			</p>
 			<figure>
-				<img src="images/Moller-intersection-algorithm.JPG" alt="Moller-Trumbore Intersection Algorithm" style="width:70%" />
+				<img src="images/muller.JPG" alt="Moller-Trumbore Intersection Algorithm" style="width:70%" />
 			</figure>
 			<p>
 				Other implementation nuances include the fact that the barycentric coordinates Moller-Trumbore comes up with can be used to determine whether the point of intersection is inside the triangle by checking if any of the baycentric coordinates are negative. Also, ray intersection times (t) that were less than the r.min_t or greater than r.max_t values were disregarded as they are invalid (to be discussed further later), and r.max_t was updated to the newly computed interseciton
@@ -569,12 +569,12 @@
 				<table style="width: 100%; text-align: center; border-collapse: collapse;">
 					<tr>
 						<td style="text-align: center;">
-							<img src="images/spheres_indirectOnly.png" width="400px" />
-							<figcaption>Only direct illumination.</figcaption>
+							<img src="images/bunny.png" width="400px" />
+							<figcaption>Sampling Heat-Map (in progress).</figcaption>
 						</td>
 						<td style="text-align: center;">
-							<img src="images/spheres_directOnly.png" width="400px" />
-							<figcaption>Only indirect illumination.</figcaption>
+							<img src="images/bunny_rate.png" width="400px" />
+							<figcaption>Dynamically sampled bunny render.</figcaption>
 						</td>
 					</tr>
 				</table>
