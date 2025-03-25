@@ -45,19 +45,23 @@
 	-->
 
 			<h2>Overview</h2>
-			TODO: Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
-
+			<h3>High Level Overview</h3>
+			<p>
+				In the Path Tracer project, I put together a basic ray-tracer! This involved implementing everything from the rays themselves, the math models for geometric primitives (we can test them for
+				ray intersections), radiometrically accurate illumination calculations/approximations using Monte Carlo integration, and implementing sampling optimizations. I particularly enjoyed thinking
+				through ray traversal algorithms and getting to play physicist for a change!
+			</p>
 			<h2>Part 1: Ray Generation and Scene Intersection</h2>
 			<h3>Walking through the ray generation and primitive intersection parts of the rendering pipeline.</h3>
-			<p>In this part of the assignment, we define the rays that we will shoot out into our 3D scenes. In particular, it involved using trigonometric properties to derive relationships between the coordinates of a pixel on a screen, and the viewing angles, depth, and world coordinates that make up a 3D scene:</p>
+			<p>In this part of the assignment, we define the rays we will shoot into our 3D scenes. In particular, it involved using trigonometric properties to derive relationships between the coordinates of a pixel on a screen, and the viewing angles, depth, and world coordinates that make up a 3D scene:</p>
 			<figure>
-				<img src="images/projectionEquations.JPG" alt="handwritten math derivations of the projection equations relating screen to world coordiantes" style="width:70%" />
+				<img src="images/projectionEquations.JPG" alt=" handwritten math derivations of the projection equations relating screen to world coordinates" style="width:70%" />
 				<figcaption>World Coordinates ↔ Screen Coordinates (eqs)</figcaption>
 			</figure>
 
-			<p>Using the above described relationships, we can map any given pixel to a position in the world. However, what if we'd like to model a camera as an intermediary?</p>
+			<p>Using the above-described relationships, we can map any given pixel to a position in the world. However, what if we'd like to model a camera as an intermediary?</p>
 			<figure>
-				<img src="images/cameraSpaceMappingDiagram.png" alt="diagram of image to camera space mapping/projections and incident rays" style="width:70%" />
+				<img src="images/cameraSpaceMappingDiagram.png" alt=" diagram of image to camera space mapping/projections and incident rays" style="width:70%" />
 			</figure>
 			<p>
 				We use a camera offset to describe a camera's position in the world then, from the perspective of that starting camera position (or camera origin), we define a sensor plane from which we'll shoot our rays. Rays are defined by nothing more than an origin and a direciton. This "sensor" will will "report back" the colors the sample rays "capture" as they traverse the scene.
@@ -65,14 +69,14 @@
 			</p>
 			<h3>Explain the triangle intersection algorithm. Sphere intersection?</h3>
 			<p>
-				Great, but how do we know when our ray has actually hit something in the scene? For this we'll need to code intersection algorithms that can reprt back wheter a ray-shape intersection has (true) occured, or not (false). We begin with the most important geometric item in computer graphics, the triangle. I implimented the Möller–Trumbore intersection algorithm for the task, an optimized scheme for computing a 3D ray-triangle-point-interseciton with respect to time,
-				as well as baycentric coordinates describing the intersect points location within said triangle. The scheme is described succinctly in the following:
+				Great, but how do we know when our ray has actually hit something in the scene? For this, we'll need to code intersection algorithms that can report back whether a ray-shape intersection has (true) occured, or not (false). We begin with the most important geometric item in computer graphics, the triangle. I implimented the Möller–Trumbore intersection algorithm for the task, an optimized scheme for computing a 3D ray-triangle-point-interseciton with respect to time,
+				as well as barycentric coordinates describing the intersect point's location within said triangle. The scheme is described succinctly in the following:
 			</p>
 			<figure>
 				<img src="images/Moller-intersection-algorithm.JPG" alt="Moller-Trumbore Intersection Algorithm" style="width:70%" />
 			</figure>
 			<p>
-				Other implementation nuances include the fact that the beycentric coordiantes Moller-Trumbore comes up with can be used to determine whether the point of intersection is inside the triangle by checking if any of the baycentric coordinates are negative. Also, ray intersection times (t) that were less than the r.min_t or greater than r.max_t values were disregarded as they are invalid (to be discussed further later), and r.max_t was updated to the newly computed interseciton
+				Other implementation nuances include the fact that the barycentric coordinates Moller-Trumbore comes up with can be used to determine whether the point of intersection is inside the triangle by checking if any of the baycentric coordinates are negative. Also, ray intersection times (t) that were less than the r.min_t or greater than r.max_t values were disregarded as they are invalid (to be discussed further later), and r.max_t was updated to the newly computed interseciton
 				points if said intersection points are farther along the ray than the previous r.max_t value.
 			</p>
 			<p>Similar logic was applied to an intersection algorithm for spheres that involves solving the quadratic formula for the points on the surface of a sphere way a ray would strike (entry and exit points).</p>
@@ -106,16 +110,16 @@
 			<h2>Part 2: Bounding Volume Hierarchy (BVH)</h2>
 			<h3>BVH construction algorithm + Heuristic for picking the splitting point.</h3>
 			<p>
-				For any one ray shooting out from our camera onto a scene of, say, a sphere, how many geometric primitives would you anticipate it striking?
-				You might imagine that, if the ray in question were to strike any primitivs at all, they would be the triangle in the mesh of the sphere at the
-				entry-intersection of the sphere and the ray, as well as the triangle at the exit-intersection of the sphere and the ray. Since such a (smooth) sphere
+				For anyone ray shooting out from our camera onto a scene of, say, a sphere, how many geometric primitives would you anticipate it striking?
+				You might imagine that, if the ray in question were to strike any primitives at all, they would be the triangle in the mesh of the sphere at the
+				entry-intersection of the sphere and the ray, as well as the triangle at the exit intersection of the sphere and the ray. Since such a (smooth) sphere
 				would be made up of many triangles, it seems a little silly to check if the ray intersected every single triangle making up the sphere only for it to
-				strike only two of them. This is the motivation behind the Bounding Volume Hierarchy, or BVH.
+				strike only two of them. This is the motivation behind the Bounding Volume Hierarchy or BVH.
 
-				To reduce the amount of (expensive) intersection tests that need to be performed and improve effeciency of mesh traversal, it is common ray-tracing practice
+				To reduce the amount of (expensive) intersection tests that need to be performed and improve the efficiency of mesh traversal, it is common ray-tracing practice
 				to pre-process meshes into trees of bounding volumes. This way, if we know that the ray didn't strike a parent bounding box, there is no need to waste compute
-				checking if any of it's children bounding boxes (and the primitives they may contain) have been itersected either. Let's walk through how one might construct
-				such a data structure to for mesh primitives.
+				checking if any of it's children bounding boxes (and the primitives they may contain) have been intersected either. Let's walk through how one might construct
+				such a data structure for mesh primitives.
 			</p>
 
 			<p>My BVH construction follows the recursive logic below:</p>
@@ -140,7 +144,7 @@
 			</ul>
 
 			<p>
-				<code>pickSplitAxis()</code> chooses the axis (X, Y, or Z) along which the bounding box is longest (i.e., the axis that would make the longest cut).
+				<code>pickSplitAxis()</code> chooses the axis (X, Y, or Z) along which the bounding box is the longest (i.e., the axis that would make the longest cut).
 			</p>
 
 			<p>
@@ -208,13 +212,13 @@
 			</table>
 			<p>
 				All images were rendered at 800px by 600px with 8 render threads on the same AMD Ryzen 7 3800X 8-Core Processor.
-				The results clearly demonstrate speedups on many orders of magnitude. This conclusion grow more evident as the size of the .dae increases;
+				The results clearly demonstrate speedups on many orders of magnitude. This conclusion grows more evident as the size of the .dae increases;
 				the speedup factor is greater the greater the .dae size. The speedup can be explained by the traversal of the BVH as a means to selectiveley
 				perform intersection tests only against geometric primitives that are most likely to be intersected by a ray based on the bounding boxes it lies in.
-				More specificaly, the traversal algorithm involves checking if the ray has struck the bounding box of the current BVH level (starting at the root node),
-				if not, exit the intersection test, if so, perform the test recursivley on both the left and right child nodes. The base case occurs when we've reached
-				a leaf node, at which point the traveral algorithm checks all the (< 4) primitives in the node's bounding volume for intersections. This is unlike
-				the naive approach of simply checking every single primative in the mesh regardless of how likely it is to actually be struck by any one ray.
+				More specifically, the traversal algorithm involves checking if the ray has struck the bounding box of the current BVH level (starting at the root node),
+				if not, exit the intersection test, if so, perform the test recursively on both the left and right child nodes. The base case occurs when we've reached
+				a leaf node, at which point the traversal algorithm checks all the (< 4) primitives in the node's bounding volume for intersections. This is unlike
+				the naive approach of simply checking every single primitive in the mesh regardless of how likely it is to actually be struck by any one ray.
 			</p>
 
 			<h2>Part 3: Direct Illumination</h2>
@@ -222,36 +226,36 @@
 			<p>
 				So up till now we've developed a method of tracing rays efficiently and probing intersected geometric primitives for metadata about themselves
 				like color textures. To see these textures we've been using a very simple interpolation approach, but what if we wanted something a bit more... realistic?
-				Well we havet all the necessary infrastructure with our existing PathTracer componenents, all that's left to do is replace our basic flat lighting function
-				with one that will perform radiometrically acccurate estimations of the the scene should be lit based on material attributes and light sources. I have
+				Well we have all the necessary infrastructure with our existing PathTracer components, all that's left to do is replace our basic flat lighting function
+				with one that will perform radiometrically accurate estimations of the scene should be lit based on material attributes and light sources. I have
 				implemented such a pair of solutions--- let's walk through them.
 			</p>
 			<h4>Hemisphere Direct Ligthing</h4>
 			<p>
 				This method of direct lighting revolves around computing the average luminosity reflected onto ray-intersect points by neighboring points in the scene.
 				More specifically, for every ray shot into our scene from our camera, the point in the scene that is intersected will shoot out rays of its own to sample
-				the luminosity neighboring points are having on it. The "hemisphere"-bit comes from the fact that for this second layer of sampling, the sampling directions
-				are chosen uniformly at random along a semi-sphere. The sampling is done to construct an approximation luminocity; in reality, there would be essentially infinitely
+				the luminosity neighboring points have on it. The "hemisphere"-bit comes from the fact that for this second layer of sampling, the sampling directions
+				are chosen uniformly at random along a semi-sphere. The sampling is done to construct an approximation luminosity; in reality, there would be essentially infinitely
 				many ray sampling every which way, but since we don't have infinite compute we settle for the below estimator:
 			</p>
 			<figure>
 				<img src="images/directLightingIrredescenceDiagram.JPG" alt="Direct Lighting Irredescence Diagram" style="width:70%" />
 			</figure>
 			<p>
-				In practice, the number of samples was set proporitonal to the number of lights in the scene: `int num_sample = scene->lights.size() * ns_are_light`. Moreover, the
-				`p=1/2*PI` comes from the geometry of the semi-circle. Other import implementation considerations included the sptail frame of rays (i.e. maintaining consistency
+				In practice, the number of samples was set proportional to the number of lights in the scene: `int num_sample = scene->lights.size() * ns_are_light`. Moreover, the
+				`p=1/2*PI` comes from the geometry of the semi-circle. Other important implementation considerations included the spatial frame of rays (i.e. maintaining consistency
 				when working with a ray/point in world space vs. camera space vs. relative primitive space; this was mostly between world and relative-to-primitive space due to needing
 				to compute the cosine between a surface normal and a light's direction from a surface.
 			</p>
 			<h4>Importance Sampling Direct Lighting</h4>
 			<p>
-				On the other hand, you can think about this illumination problem in terms of object's relative position to the sources of light in a scene: is an object far from a light?
-				is one object hidden behind another? These are the things the importance sampling approach take into consideration. My implementaiton of this lighting scheme involves
+				On the other hand, you can think about this illumination problem in terms ofan  object's relative position to the sources of light in a scene: is an object far from a light?
+				is one object hidden behind another? These are the things the importance sampling approach takes into consideration. My implementation of this lighting scheme involves
 				iterating over every light in the scene's set of lights; if the light is a point it is sampled only once, and if it is not a point light source it is sampled (like before)
-				a number of times proportional to the nunber of light sources there are. Now, what does this sampling scheme look like? Rather than modeling every point as a semi-circle
+				a number of times proportional to the number of light sources there are. Now, what does this sampling scheme look like? Rather than modeling every point as a semi-circle
 				reflector, we essentially pose a given point with the question(s), can you "see" light X? In other words, if there is a second intersection between a ray drawn from
 				the the initial intersection point and the light source in question, then that initial intersection point does not "see" the light source in question and is therefore not
-				lit by it. There are other important material constants and light-to-object angles that play a role as depicted in the following diagram(s) of this importance modeling model:
+				lit by it. There are other important material constants and light-to-object angles that play a role as depicted in the following diagram(s) of this important modeling model:
 			</p>
 			<figure>
 				<td style="text-align: center;">
@@ -305,19 +309,19 @@
 			</div>
 
 			<h3>Comparing uniform hemisphere sampling and lighting sampling.</h3>
-			It is clear from the above pictures that non-hemisphere sampling produces almost like a ring lighting effect.
-			This is in contrast to hemisphering that can feel more noisy. Even as the sampling rate increased in the
-			bunny scene without hemisphereing, it never quite looked as sharp as when we added in the hemisphering in the bunny
+			It is clear from the above pictures that non-hemisphere sampling produces almost a ring-lighting effect.
+			This is in contrast to hemispheric which can feel more noisy. Even as the sampling rate increased in the
+			bunny scene without hemispheres, it never quite looked as sharp as when we added in the hemisphere in the bunny
 			scene example with both methods.
 
 			<h2>Part 4: Global Illumination</h2>
 			<h3>Implementation of indirect lighting function.</h3>
 			<p>
-				I designed a function `at_least_one_bounce_radiance(r, isect)` that works by computing the one_bounce_radiance from before
+				I designed a function `at_least_one_bounce_radiance(r, insect)` that works by computing the one_bounce_radiance from before
 				at every step of a recursive ray sampling scheme. While the `depth` of a ray is not yet greater than the maximum allowed depth,
-				a given ray will keep "bouncing" and accumilating radiance values at intersected points, all of which will add to the cumalative radiance
+				a given ray will keep "bouncing" and accumulating radiance values at intersected points, all of which will add to the cumulative radiance
 				at the initial ray-intersect point (and a pixel on the screen by extension). Radiance is computed like before with an estimator, but
-				this the the L is a recursive call:
+				this the L is a recursive call:
 			</p>
 			<pre>
 			<code>
@@ -544,7 +548,15 @@
 			<h2>Part 5: Adaptive Sampling</h2>
 			<h3>Explain adaptive sampling. Walk through your implementation of the adaptive sampling.</h3>
 			<p>
-				To implement adaptive sampling, I 
+				To implement adaptive sampling, had to dynamically adjusts the number of samples per pixel based on the level of noise in the scene.
+				Instead of using a fixed number of samples for every pixel, I selectively took more samples in noisy areas and stopped earlier in
+				regions that have already "converged". For each pixel, samples are taken in batches, and their illuminance is tracked to compute
+				a confidence interval. If this interval is within a tolerance that is when we consider it okay to stop early; statistically,
+				we have enough representative samples. Otherwise, sampling continues until the maximum sample limit is reached. Pixel colors
+				are determined ultimately by averaging samples as before. I faced the issue of my sampling-rate heat map always showing up red, 
+				printing out values revealed that my confidence interval was never being satisfied and so all pixels sampled to the maximum
+				(meaning a uniform distribution of sampling all pixels the same as before), hence the red I get. Given more time (my slip days run out
+				in 10 minutes) I would lower the cutoff threshold.
 			</p>
 			<h3>Pick two scenes and render them with at least 2048 samples per pixel.</h3>
 			<p>
