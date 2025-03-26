@@ -549,14 +549,15 @@
 			<h3>Explain adaptive sampling. Walk through your implementation of the adaptive sampling.</h3>
 			<p>
 				To implement adaptive sampling, had to dynamically adjusts the number of samples per pixel based on the level of noise in the scene.
-				Instead of using a fixed number of samples for every pixel, I selectively took more samples in noisy areas and stopped earlier in
-				regions that have already "converged". For each pixel, samples are taken in batches, and their illuminance is tracked to compute
-				a confidence interval. If this interval is within a tolerance that is when we consider it okay to stop early; statistically,
-				we have enough representative samples. Otherwise, sampling continues until the maximum sample limit is reached. Pixel colors
-				are determined ultimately by averaging samples as before. I faced the issue of my sampling-rate heat map always showing up red, 
-				printing out values revealed that my confidence interval was never being satisfied and so all pixels sampled to the maximum
-				(meaning a uniform distribution of sampling all pixels the same as before), hence the red I get. Given more time (my slip days run out
-				in 10 minutes) I would lower the cutoff threshold.
+				Instead of using a fixed number of samples for every pixel, I selectively took more samples for areas of
+				high varying illumination and stopped earlier in
+				regions when we've collected enough samples to "converge" (i.e we've collected enough samples to represent a pixel accurately). 
+				For each pixel, samples are taken in batches, and their illuminance is tracked to compute
+				a confidence interval. The reason samples are split up into batches so that we only need to perform the costly check for
+				convergence when sufficient new samples are collected.
+				If this interval is within a tolerance, that is when we consider it okay to stop early. 
+				Otherwise, sampling continues until the maximum sample limit is reached. Pixel colors
+				are determined ultimately by averaging samples as before. 
 			</p>
 			<h3>Pick two scenes and render them with at least 2048 samples per pixel.</h3>
 			<p>
