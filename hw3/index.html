@@ -559,6 +559,43 @@
 				Otherwise, sampling continues until the maximum sample limit is reached. Pixel colors
 				are determined ultimately by averaging samples as before. 
 			</p>
+			<p>Mathmatically, here is how convergence was computed:</p>
+			\[
+			\text{Let:}
+			\]
+			
+			\[
+			s_1 = \sum_{i=1}^{n} x_i
+			\]
+			
+			\[
+			s_2 = \sum_{i=1}^{n} x_i^2
+			\]
+			
+			\[
+			n = \text{sample count}
+			\]
+			
+			\[
+			\text{Mean:} \quad \mu = \frac{s_1}{n}
+			\]
+			
+			\[
+			\text{Variance:} \quad \sigma^2 = \frac{1}{n - 1} \left(s_2 - \frac{s_1^2}{n} \right)
+			\]
+			
+			\[
+			\text{Standard Deviation:} \quad \sigma = \sqrt{\sigma^2}
+			\]
+			
+			\[
+			\text{Confidence Interval Half-Width:} \quad I = \frac{1.96 \cdot \sigma}{\sqrt{n}}
+			\]
+			
+			\[
+			\text{Convergence Condition:} \quad I \leq \text{maxTolerance} \times \mu
+			\]
+
 			<h3>Pick two scenes and render them with at least 2048 samples per pixel.</h3>
 			<p>
 				Show a good sampling rate image with clearly visible differences in sampling rate over various
