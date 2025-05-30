@@ -86,10 +86,10 @@
 			<p>
 				In order to improve the performance of my algorithm, I precomputed line-test coefficients outside of loops. For instance,
 				any differences between points were computed prior to the nested for-loop over pixels. Also, terms in line tests that relied on
-				on the y-value of the pixel in question were computed outside of the inner-most for-loop as the same value is used along
+				on the y-value of the pixel in question were computed outside of the inner-most for-loop, as the same value is used along
 				an entire row of pixels. Moreover, in order to take full advantage of caching from memory accesses from calls to fill_pixels,
 				I accessed the frame buffer in row-major order (i.e. I traversed along all x-coordinates in a row before moving on the the next
-				y-cordinate). Lastly, I made use of C++ built-in parallelization capabilities by using ``#pragma omp parallel for collapse(2)`` to
+				y-coordinate). Lastly, I made use of C++ built-in parallelization capabilities by using ``#pragma omp parallel for collapse(2)`` to
 				split up iterations of the nested for-loop across threads.
 			</p>
 			<p>
@@ -121,9 +121,9 @@
 				</li>
 			</ul>
 
-			<p>and the corresponding implementations time trail:</p>
+			<p>and the corresponding implementation's time trail:</p>
 
-			basic implementation:
+			Basic implementation:
 			<pre><code>
 				float min_x = std::min({x0, x1, x2});
 				float min_y = std::min({ y0, y1, y2 });
@@ -227,7 +227,7 @@
 				For every pixel to be rasterized, I save `sqrt(sample_rate)*sqrt(sample_rate)` color samples to the sample_buffer for a total of `width*height*sample_rate` color samples.
 				Samples corresponding to the same pixel were saved next to each other in the sample_buffer for convenient indexing.
 				To resolve to the frame_buffer, the `sample_rate` color samples corresponding to a pixel are averaged to produce the color that is actually outputted at said pixel.
-				This implementation required the dynamic resizing of the sample_buffer. Previously it was set to a length of `height*width`, but in order to make enough room for extra
+				This implementation required the dynamic resizing of the sample_buffer. Previously, it was set to a length of `height*width`, but in order to make enough room for extra
 				samples, the sample_buffer is resized to a length of `width*height*sample_rate` whenever the sample_rate is changed or the render window is resized. Moreover, the fill_pixel
 				method used to rasterize points and lines needed to be modified to account for the fact that, a single pixel no longer corresponds to just a single color in the sample_buffer.
 				For a sample_buffer slot that was to be filled with `color`, instead a `sample_buffer` amount of memory in the sample_buffer is to be filled with that same `color`.
@@ -482,7 +482,7 @@
 
 			<figure>
 				<img src="https://raw.githubusercontent.com/cal-cs184-student/joel-castro/refs/heads/master/hw1/joel_cat_art_184.png" alt="joel_cat_art" style="width:50%" />
-				<figcaption>Catsterized</figcaption>
+				<figcaption>Catsterized (CS184 HW1 Art Submission Winner!)</figcaption>
 			</figure>
 			
 			<p>
